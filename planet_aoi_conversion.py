@@ -6,12 +6,12 @@ from shapely.geometry import Polygon
 from shapely.geometry import shape
 from shapely.wkt import loads as load_wtk
 
-# input the csv file
+# Input the CSV file
 input_csv = input('Please enter the csv file name including the extension: ')
 print('You entered:' + input_csv)
 planet_order = pd.read_csv(str(input_csv))
 
-# user input to name output file
+# Get user input to name output file
 try:
     year = int(input(
         'Please enter the year that the data was mirrored in the following format yyyy:\n'))
@@ -25,55 +25,55 @@ except ValueError:
 
 outfile = 'PlanetAOI_Conversion_' + str(year) + '_' + str(month) + '.csv'
 
-# create a pandas dataframe
+# Create a pandas DataFrame
 df = pd.DataFrame(planet_order)
 
-# prepare the dataframe to be converted to spatial geometry
+# Prepare the DataFrame for conversion to spatial geometry
 coordinates = 'coordinates'
 type = 'type'
 Polygon = 'Polygon'
 
-# convert the geojson_geometry column to geometry
+# Convert the GeoJSON geometry column to spatial geometry
 df['geometry'] = df.geojson_geometry.apply(
     lambda x: shape(eval(x.replace('=', ':'))))
 
-# create a geodataframe
+# Create a GeoDataFrame
 gdf = geopandas.GeoDataFrame(
     df, geometry=df['geometry'])
 
-# set a geographic coordinate system
+# Set the geographic coordinate system
 gdf = gdf.set_crs(epsg=4326)
 
-# find the centroid of each polygon
+# Calculate the centroid of each polygon
 gdf['centroid'] = gdf.centroid
 
-# Get the minimum latitude and longitude coordinates and add as columns to the geodataframe
+# Calculate the minimum latitude and longitude coordinates and add as columns to the geodataframe
 boundary = gdf.bounds
 gdf['minx'] = boundary['minx']
 gdf['miny'] = boundary['miny']
 gdf['maxy'] = boundary['maxy']
 gdf['maxx'] = boundary['maxx']
 
-# re-project the dataframe to calculate area
+# Re-project the DataFrame to calculate area
 proj_gdf = gdf.copy()
 proj_gdf = proj_gdf.to_crs(epsg=3857)
 
-# calculate the area in km2 for each polygon and add to a new column
+# Calculate the area in km² for each polygon and add to a new column
 gdf['area_km2'] = proj_gdf['geometry'].area / 10**6
 
-# check the number of rows in the dataframe
+# Check the number of rows before removing duplicate geometries
 length_before = len(gdf)
 print('The number of rows in the original file is ' + str(length_before))
-# remove rows with duplicate polygon coordinates
+# Remove rows with duplicate polygon geometries
 gdf.drop_duplicates(subset='geometry', keep=False, inplace=True)
-# check the number of rows after removing duplicates
+# Check the number of rows after removing duplicate geometries
 length_after = len(gdf)
 removed_rows = length_before - length_after
 print('The number of duplicated rows removed is ' + str(removed_rows))
 
-# remove the following columns from the geodataframe
+# Remove unnecessary fields from the GeoDataFrame
 gdf = gdf.drop(['geojson_geometry', 'org_id', 'suborg_id', 'suborg_name', 'timestamp', 'user_id',
                 'api_key_name', 'download_item_id', 'plan_name', 'subscription_id', 'order_reference'], axis=1)
 
-# write the geodataframe to a csv file - must convert types 'geometry' to 'str'
+# Convert geometry to string and write the GeoDataFrame to a CSV file
 gdf.astype({'geometry': str}).to_csv(outfile)
