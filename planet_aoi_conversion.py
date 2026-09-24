@@ -47,7 +47,7 @@ gdf = gdf.set_crs(epsg=4326)
 # Calculate the centroid of each polygon
 gdf['centroid'] = gdf.centroid
 
-# Calculate the minimum latitude and longitude coordinates and add as columns to the geodataframe
+# Calculate the minimum and maximum latitude and longitude coordinates
 boundary = gdf.bounds
 gdf['minx'] = boundary['minx']
 gdf['miny'] = boundary['miny']
