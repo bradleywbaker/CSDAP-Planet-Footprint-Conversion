@@ -1,7 +1,9 @@
 # Converting Planet Labs Data Footprints for DESIS Tasking 
 
+Developed at the University of Alabama in Huntsville in support of NASA's Commercial Smallsat Data Acquisition (CSDA) program. DESIS (DLR Earth Sensing Imaging Spectrometer) is a hyperspectral sensor aboard the International Space State.
+
 ## Description
-This script converts Area of Interest (AOI) footprints from Planet Labs data ordered each month through CSDAP into usable DESIS tasking regions.  The idea is that it may prove valuable to task DESIS for data that has similar AOIs as data ordered from Planet Labs. This script takes a CSV file that contains Planet geoJSON_geometry and converts it to GeoPandas geometry to determine polygons, area (km2), maximum latitude and longitude, and minimum latitude and longitude for DESIS tasking.
+This script converts Area of Interest (AOI) footprints from Planet Labs data ordered each month through CSDA into usable DESIS tasking regions.  The idea is that it may prove valuable to task DESIS for data that has similar AOIs as data ordered from Planet Labs. This script takes a CSV file that contains Planet geoJSON_geometry and converts it to GeoPandas geometry to determine polygons, area (km2), maximum latitude and longitude, and minimum latitude and longitude for DESIS tasking.
 
 ## Required Libraries
 pandas, GeoPandas, shapely 
